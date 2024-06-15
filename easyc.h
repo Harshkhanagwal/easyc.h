@@ -33,16 +33,18 @@ void insertAtBeginning_float(float arr[], int *size, float elem)
     arr[0] = elem;
     (*size)++;
 }
-void insertAtBeginning_char(char str[], char ch)
+void insertAtBeginning_char(char arr[],int *size,char ch)
 {
-    int len = strlen(str);
+    int index = 0; 
 
-    for (int i = len; i >= 0; i--)
+    for (int i = *size; i > index; i--)
     {
-        str[i + 1] = str[i];
+        arr[i] = arr[i - 1];
     }
 
-    str[0] = ch;
+    arr[index] = ch;
+
+    (*size)++;
 }
 
 
