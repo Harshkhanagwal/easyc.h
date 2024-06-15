@@ -45,6 +45,7 @@ void insertAtBeginning_char(char str[], char ch)
     str[0] = ch;
 }
 
+
 void insertAtEnd_int(int arr[], int *size, int elem)
 {
     arr[*size] = elem;
@@ -56,120 +57,93 @@ void insertAtEnd_float(float arr[], int *size, float elem)
     arr[*size] = elem;
     (*size)++;
 }
-
-void insertAtEnd_char(char **str, char c)
+void insertAtEnd_char(char *str, int *size, char c)
 {
+    int oldLength = *size;
+    int newLength = oldLength + 1; // +1 for the new character
 
-    int newLength = strlen(*str) + 1;
-
-    char *newStr = (char *)malloc(newLength * sizeof(char));
+    char *newStr = (char *)malloc((newLength + 1) * sizeof(char)); // +1 for the null terminator
     if (newStr == NULL)
     {
         printf("Memory allocation failed. Exiting...\n");
         exit(1);
     }
 
-    strcpy(newStr, *str);
+    strcpy(newStr, str);
 
-    newStr[newLength - 1] = c;
+    newStr[oldLength] = c;
     newStr[newLength] = '\0';
 
-    free(*str);
-    *str = newStr;
+    strcpy(str, newStr);
+    *size = newLength; // Update the size to the new length
+    free(newStr);
 }
 
-void insertAtIndex_int(int **arr, int *size, int elem, int index)
-{
 
+void insertAtIndex_int(int arr[], int *size, int value, int index)
+{
+    // Check if the index is within bounds
     if (index < 0 || index > *size)
     {
-        printf("Invalid index. Cannot insert element.\n");
+        printf("Index out of bounds.\n");
         return;
     }
 
-    int newSize = *size + 1;
-    int *newArr = (int *)malloc(newSize * sizeof(int));
-    if (newArr == NULL)
+    // Shift elements to the right to make space for the new value
+    for (int i = *size; i > index; i--)
     {
-        printf("Memory allocation failed. Exiting...\n");
-        exit(1);
+        arr[i] = arr[i - 1];
     }
 
-    for (int i = 0; i < index; i++)
-    {
-        newArr[i] = (*arr)[i];
-    }
+    // Insert the value at the specified index
+    arr[index] = value;
 
-    newArr[index] = elem;
-
-    for (int i = index; i < *size; i++)
-    {
-        newArr[i + 1] = (*arr)[i];
-    }
-
-    *size = newSize;
-    free(*arr);
-    *arr = newArr;
+    // Increase the size by 1
+    (*size)++;
 }
 
-void insertAtIndex_float(float **arr, int *size, float elem, int index)
+void insertAtIndex_float(float arr[], int *size, float value, int index)
 {
+    // Check if the index is within bounds
     if (index < 0 || index > *size)
     {
-        printf("Invalid index. Cannot insert element.\n");
+        printf("Index out of bounds.\n");
         return;
     }
 
-    int newSize = *size + 1;
-    float *newArr = (float *)malloc(newSize * sizeof(float));
-    if (newArr == NULL)
+    // Shift elements to the right to make space for the new value
+    for (int i = *size; i > index; i--)
     {
-        printf("Memory allocation failed. Exiting...\n");
-        exit(1);
+        arr[i] = arr[i - 1];
     }
 
-    for (int i = 0; i < index; i++)
-    {
-        newArr[i] = (*arr)[i];
-    }
+    // Insert the value at the specified index
+    arr[index] = value;
 
-    newArr[index] = elem;
-
-    for (int i = index; i < *size; i++)
-    {
-        newArr[i + 1] = (*arr)[i];
-    }
-
-    *size = newSize;
-    free(*arr);
-    *arr = newArr;
+    // Increase the size by 1
+    (*size)++;
 }
 
-void insertAtIndex_char(char **str, char c, int index)
+void insertAtIndex_char(char arr[], int *size, char value, int index)
 {
-
-    int len = strlen(*str);
-    if (index < 0 || index > len)
+    // Check if the index is within bounds
+    if (index < 0 || index > *size)
     {
-        printf("Invalid index. Cannot insert character.\n");
+        printf("Index out of bounds.\n");
         return;
     }
 
-    char *newStr = (char *)malloc((len + 2) * sizeof(char));
-    if (newStr == NULL)
+    // Shift elements to the right to make space for the new value
+    for (int i = *size; i > index; i--)
     {
-        printf("Memory allocation failed. Exiting...\n");
-        exit(1);
+        arr[i] = arr[i - 1];
     }
 
-    strncpy(newStr, *str, index);
+    // Insert the value at the specified index
+    arr[index] = value;
 
-    newStr[index] = c;
-
-    strcpy(newStr + index + 1, *str + index);
-
-    free(*str);
-    *str = newStr;
+    // Increase the size by 1
+    (*size)++;
 }
 
 // ---------<Insertion />---------
@@ -206,18 +180,23 @@ void deleteFromBeginning_float(float arr[], int *size)
 
     (*size)--;
 }
-void deleteFromBeginning_char(char *str)
+void deleteFromBeginning_char(char arr[], int *size)
 {
-    if (str[0] == '\0')
+    // Check if the array is empty
+    if (*size == 0)
     {
-        printf("String is empty. Cannot delete.\n");
+        printf("Array is empty. Cannot delete.\n");
         return;
     }
 
-    for (int i = 0; str[i] != '\0'; i++)
+    // Shift elements to the left to overwrite the first element
+    for (int i = 0; i < *size - 1; i++)
     {
-        str[i] = str[i + 1];
+        arr[i] = arr[i + 1];
     }
+
+    // Decrease the size by 1
+    (*size)--;
 }
 
 void deleteFromEnd_int(int arr[], int *size)
@@ -240,16 +219,28 @@ void deleteFromEnd_float(float arr[], int *size)
 
     (*size)--;
 }
-void deleteFromEnd_char(char *str)
+
+void deleteFromEnd(char arr[]) {
+    int len = strlen(arr);
+    if (len > 0) {
+        arr[len - 1] = '\0'; // Replace the last character with null terminator
+    }
+}
+
+void deleteFromEnd_char(char str[],int *size)
 {
-    int len = strlen(str);
+    int len = *size;
     if (len <= 0)
     {
         printf("String is empty. Cannot delete.\n");
         return;
+    }else{
+
+        str[len - 1] = '\0';
+        (*size)--;
     }
 
-    str[len - 1] = '\0';
+    
 }
 
 void deleteFromIndex_int(int arr[], int *size, int index)
@@ -402,14 +393,16 @@ void printArr_float(float arr[], int size)
     }
     printf("\n");
 }
-void printArr_char(char arr[], int size)
-{
-    printf("Array elements: ");
-    for (int i = 0; i < size; i++)
-    {
-        printf("%c ", arr[i]);
+void printArr_char(char arr[], int size) {
+    if (size > 0) {
+        printf("Array elements: ");
+        for (int i = 0; i < size; ++i) {
+            printf("%c ", arr[i]);
+        }
+        printf("\n");
+    } else {
+        printf("Array elements: \n");
     }
-    printf("\n");
 }
 
 // ---------<print />---------
@@ -1099,7 +1092,6 @@ LinkedList_C *createNode_C(int data)
     newNode->next = NULL;
     return newNode;
 }
-
 void insertAtBeginning_C(LinkedList_C **head_ref, int new_data)
 {
     LinkedList_C *new_node = createNode_C(new_data);
@@ -1109,10 +1101,12 @@ void insertAtBeginning_C(LinkedList_C **head_ref, int new_data)
     }
     else
     {
-        new_node->next = (*head_ref)->next;
+        new_node->next = (*head_ref)->next; // Set new_node's next to current head's next
+        (*head_ref)->next = new_node; // Update current head's next to new_node
     }
-    (*head_ref) = new_node;
+    (*head_ref) = new_node; // Update head to point to new_node
 }
+
 
 void insertAtEnd_C(LinkedList_C **head_ref, int new_data)
 {
@@ -1169,7 +1163,6 @@ void deleteAtBeginning_C(LinkedList_C **head_ref)
     (*head_ref)->next = temp->next;
     free(temp);
 }
-
 void deleteAtEnd_C(LinkedList_C **head_ref)
 {
     if (*head_ref == NULL)
@@ -1233,21 +1226,25 @@ void printList_C(LinkedList_C *head)
 
 //============================================================queue Start============================================================
 // Define the structure of a node
-typedef struct Node_LLR {
+typedef struct Node_LLR
+{
     int data;
-    struct Node_LLR* next;
+    struct Node_LLR *next;
 } Node_LLR;
 
 // Define the structure of the queue
-typedef struct {
-    Node_LLR* front;
-    Node_LLR* rear;
+typedef struct
+{
+    Node_LLR *front;
+    Node_LLR *rear;
 } Queue_LLR;
 
 // Function to create a new node
-Node_LLR* createNodeQueue(int data) {
-    Node_LLR* newNode = (Node_LLR*)malloc(sizeof(Node_LLR));
-    if (newNode == NULL) {
+Node_LLR *createNodeQueue(int data)
+{
+    Node_LLR *newNode = (Node_LLR *)malloc(sizeof(Node_LLR));
+    if (newNode == NULL)
+    {
         printf("Memory allocation failed\n");
         exit(1);
     }
@@ -1257,9 +1254,11 @@ Node_LLR* createNodeQueue(int data) {
 }
 
 // Function to initialize the queue
-Queue_LLR* createQueue_LLR() {
-    Queue_LLR* queue = (Queue_LLR*)malloc(sizeof(Queue_LLR));
-    if (queue == NULL) {
+Queue_LLR *createQueue_LLR()
+{
+    Queue_LLR *queue = (Queue_LLR *)malloc(sizeof(Queue_LLR));
+    if (queue == NULL)
+    {
         printf("Memory allocation failed\n");
         exit(1);
     }
@@ -1268,16 +1267,21 @@ Queue_LLR* createQueue_LLR() {
 }
 
 // Function to check if the queue is empty
-int isQueueEmpty_LLR(Queue_LLR* queue) {
+int isQueueEmpty_LLR(Queue_LLR *queue)
+{
     return (queue->front == NULL);
 }
 
 // Function to add an element to the queue
-void enqueue_LLR(Queue_LLR* queue, int data) {
-    Node_LLR* newNode = createNodeQueue(data);
-    if (isQueueEmpty_LLR(queue)) {
+void enqueue_LLR(Queue_LLR *queue, int data)
+{
+    Node_LLR *newNode = createNodeQueue(data);
+    if (isQueueEmpty_LLR(queue))
+    {
         queue->front = queue->rear = newNode;
-    } else {
+    }
+    else
+    {
         queue->rear->next = newNode;
         queue->rear = newNode;
     }
@@ -1285,15 +1289,18 @@ void enqueue_LLR(Queue_LLR* queue, int data) {
 }
 
 // Function to remove an element from the queue
-int dequeue_LLR(Queue_LLR* queue) {
-    if (isQueueEmpty_LLR(queue)) {
+int dequeue_LLR(Queue_LLR *queue)
+{
+    if (isQueueEmpty_LLR(queue))
+    {
         printf("Queue is empty\n");
         exit(1);
     }
     int data = queue->front->data;
-    Node_LLR* temp = queue->front;
+    Node_LLR *temp = queue->front;
     queue->front = queue->front->next;
-    if (queue->front == NULL) {
+    if (queue->front == NULL)
+    {
         queue->rear = NULL;
     }
     free(temp);
@@ -1302,8 +1309,10 @@ int dequeue_LLR(Queue_LLR* queue) {
 }
 
 // Function to get the first element of the queue
-int firstElement_LLR(Queue_LLR* queue) {
-    if (isQueueEmpty_LLR(queue)) {
+int firstElement_LLR(Queue_LLR *queue)
+{
+    if (isQueueEmpty_LLR(queue))
+    {
         printf("Queue is empty\n");
         exit(1);
     }
@@ -1311,14 +1320,17 @@ int firstElement_LLR(Queue_LLR* queue) {
 }
 
 // Function to print the queue
-void printQueue_LLR(Queue_LLR* queue) {
-    if (isQueueEmpty_LLR(queue)) {
+void printQueue_LLR(Queue_LLR *queue)
+{
+    if (isQueueEmpty_LLR(queue))
+    {
         printf("Queue is empty\n");
         return;
     }
-    Node_LLR* current = queue->front;
+    Node_LLR *current = queue->front;
     printf("Queue elements: ");
-    while (current != NULL) {
+    while (current != NULL)
+    {
         printf("%d ", current->data);
         current = current->next;
     }
@@ -1326,35 +1338,41 @@ void printQueue_LLR(Queue_LLR* queue) {
 }
 
 //----------<array based queue/>------------
-typedef struct {
+typedef struct
+{
     int front, rear, size;
     unsigned capacity;
-    int* array;
+    int *array;
 } Queue_AR;
 
 // Function to create a queue of given capacity
-Queue_AR* createQueue_AR(unsigned capacity) {
-    Queue_AR* queue = (Queue_AR*) malloc(sizeof(Queue_AR));
+Queue_AR *createQueue_AR(unsigned capacity)
+{
+    Queue_AR *queue = (Queue_AR *)malloc(sizeof(Queue_AR));
     queue->capacity = capacity;
     queue->front = queue->size = 0;
     queue->rear = capacity - 1; // This is important, see the enqueue
-    queue->array = (int*) malloc(queue->capacity * sizeof(int));
+    queue->array = (int *)malloc(queue->capacity * sizeof(int));
     return queue;
 }
 
 // Queue is full when size becomes equal to the capacity
-int isQueueFull_AR(Queue_AR* queue) {
+int isQueueFull_AR(Queue_AR *queue)
+{
     return (queue->size == queue->capacity);
 }
 
 // Queue is empty when size is 0
-int isQueueEmpty_AR(Queue_AR* queue) {
+int isQueueEmpty_AR(Queue_AR *queue)
+{
     return (queue->size == 0);
 }
 
 // Function to add an item to the queue
-void enqueue_AR(Queue_AR* queue, int item) {
-    if (isQueueFull_AR(queue)) {
+void enqueue_AR(Queue_AR *queue, int item)
+{
+    if (isQueueFull_AR(queue))
+    {
         printf("Queue is full\n");
         return;
     }
@@ -1365,8 +1383,10 @@ void enqueue_AR(Queue_AR* queue, int item) {
 }
 
 // Function to remove an item from queue
-int dequeue_AR(Queue_AR* queue) {
-    if (isQueueEmpty_AR(queue)) {
+int dequeue_AR(Queue_AR *queue)
+{
+    if (isQueueEmpty_AR(queue))
+    {
         printf("Queue is empty\n");
         return -1;
     }
@@ -1378,21 +1398,26 @@ int dequeue_AR(Queue_AR* queue) {
 }
 
 // Function to get front of queue
-int front_AR(Queue_AR* queue) {
-    if (isQueueEmpty_AR(queue)) {
+int front_AR(Queue_AR *queue)
+{
+    if (isQueueEmpty_AR(queue))
+    {
         return -1;
     }
     return queue->array[queue->front];
 }
 
 // Function to print the queue
-void printQueue_AR(Queue_AR* queue) {
-    if (isQueueEmpty_AR(queue)) {
+void printQueue_AR(Queue_AR *queue)
+{
+    if (isQueueEmpty_AR(queue))
+    {
         printf("Queue is empty\n");
         return;
     }
     int i;
-    for (i = 0; i < queue->size; i++) {
+    for (i = 0; i < queue->size; i++)
+    {
         int index = (queue->front + i) % queue->capacity;
         printf("%d ", queue->array[index]);
     }
